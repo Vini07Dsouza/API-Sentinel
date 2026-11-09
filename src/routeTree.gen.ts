@@ -10,6 +10,8 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as IncidentsIndexRouteImport } from './routes/incidents.index'
+import { Route as IncidentsIncidentIdRouteImport } from './routes/incidents.$incidentId'
 import { Route as MonitorsIndexRouteImport } from './routes/monitors.index'
 import { Route as MonitorsNewRouteImport } from './routes/monitors.new'
 import { Route as MonitorsMonitorIdEditRouteImport } from './routes/monitors.$monitorId.edit'
@@ -17,6 +19,16 @@ import { Route as MonitorsMonitorIdEditRouteImport } from './routes/monitors.$mo
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IncidentsIndexRoute = IncidentsIndexRouteImport.update({
+  id: '/incidents/',
+  path: '/incidents/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IncidentsIncidentIdRoute = IncidentsIncidentIdRouteImport.update({
+  id: '/incidents/$incidentId',
+  path: '/incidents/$incidentId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MonitorsIndexRoute = MonitorsIndexRouteImport.update({
@@ -37,39 +49,61 @@ const MonitorsMonitorIdEditRoute = MonitorsMonitorIdEditRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/incidents/$incidentId': typeof IncidentsIncidentIdRoute
   '/monitors/new': typeof MonitorsNewRoute
+  '/incidents/': typeof IncidentsIndexRoute
   '/monitors/': typeof MonitorsIndexRoute
   '/monitors/$monitorId/edit': typeof MonitorsMonitorIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/incidents/$incidentId': typeof IncidentsIncidentIdRoute
   '/monitors/new': typeof MonitorsNewRoute
+  '/incidents': typeof IncidentsIndexRoute
   '/monitors': typeof MonitorsIndexRoute
   '/monitors/$monitorId/edit': typeof MonitorsMonitorIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/incidents/$incidentId': typeof IncidentsIncidentIdRoute
   '/monitors/new': typeof MonitorsNewRoute
+  '/incidents/': typeof IncidentsIndexRoute
   '/monitors/': typeof MonitorsIndexRoute
   '/monitors/$monitorId/edit': typeof MonitorsMonitorIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/monitors/new' | '/monitors/' | '/monitors/$monitorId/edit'
+  fullPaths:
+    | '/'
+    | '/incidents/$incidentId'
+    | '/monitors/new'
+    | '/incidents/'
+    | '/monitors/'
+    | '/monitors/$monitorId/edit'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/monitors/new' | '/monitors' | '/monitors/$monitorId/edit'
+  to:
+    | '/'
+    | '/incidents/$incidentId'
+    | '/monitors/new'
+    | '/incidents'
+    | '/monitors'
+    | '/monitors/$monitorId/edit'
   id:
     | '__root__'
     | '/'
+    | '/incidents/$incidentId'
     | '/monitors/new'
+    | '/incidents/'
     | '/monitors/'
     | '/monitors/$monitorId/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  IncidentsIncidentIdRoute: typeof IncidentsIncidentIdRoute
   MonitorsNewRoute: typeof MonitorsNewRoute
+  IncidentsIndexRoute: typeof IncidentsIndexRoute
   MonitorsIndexRoute: typeof MonitorsIndexRoute
   MonitorsMonitorIdEditRoute: typeof MonitorsMonitorIdEditRoute
 }
@@ -81,6 +115,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/incidents/': {
+      id: '/incidents/'
+      path: '/incidents'
+      fullPath: '/incidents/'
+      preLoaderRoute: typeof IncidentsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/incidents/$incidentId': {
+      id: '/incidents/$incidentId'
+      path: '/incidents/$incidentId'
+      fullPath: '/incidents/$incidentId'
+      preLoaderRoute: typeof IncidentsIncidentIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/monitors/': {
@@ -109,7 +157,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  IncidentsIncidentIdRoute: IncidentsIncidentIdRoute,
   MonitorsNewRoute: MonitorsNewRoute,
+  IncidentsIndexRoute: IncidentsIndexRoute,
   MonitorsIndexRoute: MonitorsIndexRoute,
   MonitorsMonitorIdEditRoute: MonitorsMonitorIdEditRoute,
 }
