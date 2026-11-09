@@ -39,7 +39,7 @@ export function ResponseTimeChart({
         </defs>
         <CartesianGrid vertical={false} strokeDasharray="3 3" />
         <XAxis dataKey="t" tickFormatter={fmt} tickLine={false} axisLine={false} minTickGap={32} tickMargin={8} />
-        <YAxis width={48} tickLine={false} axisLine={false} tickFormatter={(v: number) => `${v}ms`} />
+        <YAxis width={52} tickLine={false} axisLine={false} tickFormatter={(v: number) => (v >= 1000 ? `${(v / 1000).toFixed(1)}s` : `${v}ms`)} />
         <ChartTooltip
           content={
             <ChartTooltipContent
@@ -138,7 +138,7 @@ export function SimpleBarChart({
         <BarChart data={data} layout="vertical" margin={{ left: 0, right: 12 }}>
           <CartesianGrid horizontal={false} strokeDasharray="3 3" />
           <XAxis type="number" tickLine={false} axisLine={false} tickFormatter={valueFormatter} />
-          <YAxis type="category" dataKey="label" width={120} tickLine={false} axisLine={false} tick={{ fontSize: 11 }} />
+          <YAxis type="category" dataKey="label" width={150} tickLine={false} axisLine={false} tick={{ fontSize: 11 }} />
           <ChartTooltip
             content={
               <ChartTooltipContent
@@ -151,7 +151,7 @@ export function SimpleBarChart({
               />
             }
           />
-          <Bar dataKey="value" fill="var(--color-value)" radius={4} />
+          <Bar dataKey="value" fill="var(--color-value)" radius={4} maxBarSize={18} />
         </BarChart>
       ) : (
         <BarChart data={data} margin={{ left: 0, right: 8, top: 8 }}>
@@ -170,7 +170,7 @@ export function SimpleBarChart({
               />
             }
           />
-          <Bar dataKey="value" fill="var(--color-value)" radius={4} />
+          <Bar dataKey="value" fill="var(--color-value)" fillOpacity={0.85} radius={4} maxBarSize={44} />
         </BarChart>
       )}
     </ChartContainer>

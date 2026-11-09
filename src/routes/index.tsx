@@ -117,9 +117,9 @@ function Dashboard({ data }: { data: AppData }) {
           tone="success"
         />
         <StatCard
-          label="Active incidents"
+          label="Incidents"
           value={stats.activeIncidents.length}
-          hint={`${stats.activeIncidents.filter((i) => i.severity === "critical").length} critical`}
+          hint={`Active · ${stats.activeIncidents.filter((i) => i.severity === "critical").length} critical`}
           icon={AlertOctagon}
           tone={stats.activeIncidents.length > 0 ? "danger" : "default"}
         />
@@ -131,7 +131,7 @@ function Dashboard({ data }: { data: AppData }) {
           tone={stats.uptime30 !== null && stats.uptime30 < target ? "warning" : "success"}
         />
         <div className="col-span-2 lg:col-span-1">
-          <StatCard label="Avg response · 24h" value={formatMs(stats.avg24)} hint="Across active monitors" icon={Timer} />
+          <StatCard label="Latency · 24h" value={formatMs(stats.avg24)} hint="Average, active monitors" icon={Timer} />
         </div>
       </div>
 
@@ -184,7 +184,7 @@ function Dashboard({ data }: { data: AppData }) {
                     buckets={bucketize(checksInWindow(s.checks, now - 30 * DAY, now), now - 30 * DAY, now, DAY)}
                   />
                   <span className="tabular w-16 text-right font-mono text-xs text-muted-foreground">{formatMs(s.avg24h)}</span>
-                  <span className="ml-auto sm:ml-0">
+                  <span className="ml-auto flex sm:ml-0 sm:w-28 sm:justify-end">
                     <MonitorStatusBadge status={s.status} />
                   </span>
                 </div>

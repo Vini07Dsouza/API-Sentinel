@@ -51,7 +51,7 @@ export const DEFAULT_SETTINGS: Settings = {
     latencyWarningMs: 800,
     latencyCriticalMs: 2000,
     consecutiveFailures: 2,
-    uptimeTarget: 99.9,
+    uptimeTarget: 99.5,
   },
   monitoring: {
     defaultIntervalSeconds: 60,

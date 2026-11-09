@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Badge } from "@/components/ui/badge";
+import { Logo } from "@/components/layout/logo";
 import { useSentinel } from "@/lib/store/sentinel-store";
 
 export function AppHeader() {
@@ -16,6 +17,10 @@ export function AppHeader() {
     <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center gap-2 border-b bg-background/90 px-3 backdrop-blur sm:px-4">
       <SidebarTrigger aria-label="Toggle navigation" />
       <Separator orientation="vertical" className="mx-1 h-5" />
+      <Link to="/" className="flex items-center gap-2 md:hidden" aria-label="API Sentinel home">
+        <Logo className="size-6" />
+        <span className="text-sm font-semibold tracking-tight">API Sentinel</span>
+      </Link>
       {data?.isSampleData ? (
         <Badge variant="info" className="hidden sm:inline-flex" title="This workspace shows generated sample data">
           Sample data
