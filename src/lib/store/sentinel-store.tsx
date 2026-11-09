@@ -50,6 +50,7 @@ function consecutiveFailures(checks: CheckResult[], monitorId: string): number {
   let count = 0;
   for (let i = checks.length - 1; i >= 0; i--) {
     const c = checks[i];
+    if (!c) continue;
     if (c.monitorId !== monitorId) continue;
     if (c.ok) break;
     count++;
@@ -367,12 +368,12 @@ export function useSentinel() {
 export interface MonitorSummary {
   monitor: Monitor;
   status: MonitorStatus;
-  latest?: CheckResult;
+  latest?: CheckResult | undefined;
   checks: CheckResult[];
   uptime24h: number | null;
   uptime30d: number | null;
   avg24h: number | null;
-  openIncident?: Incident;
+  openIncident?: Incident | undefined;
 }
 
 export function summarizeMonitors(data: AppData, now = Date.now()): MonitorSummary[] {

@@ -92,7 +92,7 @@ function toDefaults(monitor: Monitor | undefined, defaults: { intervalSeconds: n
   };
 }
 
-function FieldError({ message, id }: { message?: string; id: string }) {
+function FieldError({ message, id }: { message?: string | undefined; id: string }) {
   if (!message) return null;
   return (
     <p id={id} className="text-xs text-destructive">
@@ -111,8 +111,8 @@ function Field({
 }: {
   id: string;
   label: string;
-  hint?: string;
-  error?: string;
+  hint?: string | undefined;
+  error?: string | undefined;
   children: React.ReactNode;
   className?: string;
 }) {

@@ -56,9 +56,9 @@ export function latencyStats(checks: CheckResult[]): LatencyStats {
   const p95Index = Math.min(values.length - 1, Math.ceil(values.length * 0.95) - 1);
   return {
     avg: sum / values.length,
-    min: values[0],
-    max: values[values.length - 1],
-    p95: values[p95Index],
+    min: values[0] ?? null,
+    max: values[values.length - 1] ?? null,
+    p95: values[p95Index] ?? null,
   };
 }
 
@@ -83,7 +83,7 @@ export function bucketize(
   for (const c of checks) {
     if (c.at < from || c.at > to) continue;
     const idx = Math.min(count - 1, Math.floor((c.at - from) / bucketMs));
-    groups[idx].push(c);
+    groups[idx]?.push(c);
   }
   return groups.map((group, i) => {
     const stats = latencyStats(group);

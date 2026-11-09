@@ -39,7 +39,7 @@ export interface CheckResult {
   responseMs: number | null;
   statusCode: number | null;
   ok: boolean;
-  error?: string;
+  error?: string | undefined;
 }
 
 export type IncidentSeverity = "critical" | "major" | "minor";
@@ -58,8 +58,8 @@ export interface Incident {
   severity: IncidentSeverity;
   status: IncidentStatus;
   startedAt: number;
-  acknowledgedAt?: number;
-  resolvedAt?: number;
+  acknowledgedAt?: number | undefined;
+  resolvedAt?: number | undefined;
   events: IncidentEvent[];
 }
 
@@ -72,8 +72,8 @@ export interface AppNotification {
   title: string;
   body: string;
   read: boolean;
-  incidentId?: string;
-  monitorId?: string;
+  incidentId?: string | undefined;
+  monitorId?: string | undefined;
 }
 
 export interface Settings {
@@ -136,6 +136,6 @@ export interface EndpointCheckResponse {
   ok: boolean;
   statusCode: number | null;
   responseMs: number | null;
-  error?: string;
+  error?: string | undefined;
   checkedAt: number;
 }

@@ -56,7 +56,7 @@ export const runEndpointCheck = createServerFn({ method: "POST" })
       const res = await fetch(target.toString(), {
         method: data.method,
         headers,
-        body: hasBody ? "{}" : undefined,
+        ...(hasBody ? { body: "{}" } : {}),
         redirect: "follow",
         signal: AbortSignal.timeout(data.timeoutMs),
       });

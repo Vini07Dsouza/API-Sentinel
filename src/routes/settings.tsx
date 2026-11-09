@@ -89,7 +89,7 @@ function SettingsView({ data }: { data: AppData }) {
   );
 }
 
-function Row({ id, label, hint, error, children }: { id: string; label: string; hint?: string; error?: string; children: ReactNode }) {
+function Row({ id, label, hint, error, children }: { id: string; label: string; hint?: string | undefined; error?: string | undefined; children: ReactNode }) {
   return (
     <div className="space-y-1.5">
       <Label htmlFor={id}>{label}</Label>
