@@ -329,7 +329,8 @@ export function createSampleData(now = Date.now()): AppData {
 
       if (rand() < profile.failureRate) {
         const codes = [500, 502, 503, 504, null];
-        const code = codes[Math.floor(rand() * codes.length)] ?? 500;
+        const picked = codes[Math.floor(rand() * codes.length)];
+        const code = picked === undefined ? 500 : picked;
         checks.push({
           monitorId: id,
           at,
