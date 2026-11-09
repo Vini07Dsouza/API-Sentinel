@@ -9,8 +9,8 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * API Sentinel design system — dark navy developer-tool aesthetic.
- * The app is dark-only, so :root carries the dark palette.
+ * API Sentinel design system — green brand theme (light).
+ * Page background is the brand green; content sits on white cards.
  */
 
 @theme inline {
@@ -51,6 +51,10 @@
   --color-ring: var(--ring);
   --color-ring-offset-background: var(--background);
   --color-surface: var(--surface);
+  --color-brand: var(--brand);
+  --color-brand-dark: var(--brand-dark);
+  --color-brand-secondary: var(--brand-secondary);
+  --color-brand-light: var(--brand-light);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -69,55 +73,61 @@
 }
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
   --radius: 0.625rem;
 
-  --background: oklch(0.155 0.022 266);
-  --foreground: oklch(0.955 0.008 266);
-  --surface: oklch(0.175 0.024 266);
-  --card: oklch(0.19 0.025 266);
-  --card-foreground: oklch(0.955 0.008 266);
-  --popover: oklch(0.205 0.027 266);
-  --popover-foreground: oklch(0.955 0.008 266);
+  /* Brand palette: #66A192 page, #244B43 dark, #3F7769 secondary, #E5F0EC light, #1E302C text */
+  --brand: oklch(0.664 0.066 176.3);
+  --brand-dark: oklch(0.381 0.047 178.7);
+  --brand-secondary: oklch(0.526 0.064 175.6);
+  --brand-light: oklch(0.946 0.013 172.4);
 
-  --primary: oklch(0.66 0.16 272);
-  --primary-foreground: oklch(0.985 0.005 272);
-  --secondary: oklch(0.24 0.028 266);
-  --secondary-foreground: oklch(0.93 0.01 266);
-  --muted: oklch(0.225 0.026 266);
-  --muted-foreground: oklch(0.68 0.03 266);
-  --accent: oklch(0.255 0.035 270);
-  --accent-foreground: oklch(0.96 0.01 270);
+  --background: oklch(0.664 0.066 176.3);
+  --foreground: oklch(0.292 0.025 179);
+  --surface: oklch(0.975 0.007 172);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.292 0.025 179);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.292 0.025 179);
 
-  --destructive: oklch(0.65 0.2 25);
-  --destructive-foreground: oklch(0.98 0.01 25);
-  --success: oklch(0.74 0.16 155);
-  --success-foreground: oklch(0.2 0.04 155);
-  --warning: oklch(0.81 0.14 78);
-  --warning-foreground: oklch(0.22 0.05 78);
-  --info: oklch(0.72 0.12 240);
+  --primary: oklch(0.381 0.047 178.7);
+  --primary-foreground: oklch(0.985 0.004 172);
+  --secondary: oklch(0.946 0.013 172.4);
+  --secondary-foreground: oklch(0.381 0.047 178.7);
+  --muted: oklch(0.946 0.013 172.4);
+  --muted-foreground: oklch(0.478 0.031 178.5);
+  --accent: oklch(0.946 0.013 172.4);
+  --accent-foreground: oklch(0.292 0.025 179);
 
-  --border: oklch(0.28 0.028 266);
-  --border-strong: oklch(0.34 0.032 266);
-  --input: oklch(0.3 0.03 266);
-  --ring: oklch(0.66 0.16 272);
+  --destructive: oklch(0.544 0.186 26);
+  --destructive-foreground: oklch(0.985 0.005 26);
+  --success: oklch(0.52 0.13 152.5);
+  --success-foreground: oklch(0.985 0.01 152);
+  --warning: oklch(0.56 0.12 68);
+  --warning-foreground: oklch(0.985 0.01 70);
+  --info: oklch(0.514 0.082 233.3);
 
-  --chart-1: oklch(0.68 0.15 260);
-  --chart-2: oklch(0.66 0.17 295);
-  --chart-3: oklch(0.74 0.16 155);
-  --chart-4: oklch(0.81 0.14 78);
-  --chart-5: oklch(0.65 0.2 25);
+  --border: oklch(0.902 0.019 171.5);
+  --border-strong: oklch(0.84 0.025 172);
+  --input: oklch(0.87 0.022 172);
+  --ring: oklch(0.526 0.064 175.6);
 
-  --sidebar: oklch(0.14 0.021 266);
-  --sidebar-foreground: oklch(0.86 0.015 266);
-  --sidebar-primary: oklch(0.66 0.16 272);
-  --sidebar-primary-foreground: oklch(0.985 0.005 272);
-  --sidebar-accent: oklch(0.21 0.028 268);
-  --sidebar-accent-foreground: oklch(0.97 0.008 266);
-  --sidebar-border: oklch(0.24 0.026 266);
-  --sidebar-ring: oklch(0.66 0.16 272);
+  --chart-1: oklch(0.526 0.064 175.6);
+  --chart-2: oklch(0.381 0.047 178.7);
+  --chart-3: oklch(0.52 0.13 152.5);
+  --chart-4: oklch(0.56 0.12 68);
+  --chart-5: oklch(0.544 0.186 26);
 
-  --shadow-card-value: 0 1px 0 0 oklch(1 0 0 / 3%) inset, 0 1px 2px 0 oklch(0 0 0 / 30%);
+  --sidebar: oklch(0.381 0.047 178.7);
+  --sidebar-foreground: oklch(0.899 0.023 172.8);
+  --sidebar-primary: oklch(0.946 0.013 172.4);
+  --sidebar-primary-foreground: oklch(0.292 0.025 179);
+  --sidebar-accent: oklch(0.448 0.055 178.4);
+  --sidebar-accent-foreground: oklch(0.99 0.004 172);
+  --sidebar-border: oklch(0.44 0.045 178);
+  --sidebar-ring: oklch(0.946 0.013 172.4);
+
+  --shadow-card-value: 0 1px 2px 0 oklch(0.292 0.025 179 / 8%), 0 1px 3px 0 oklch(0.292 0.025 179 / 6%);
 }
 
 @layer base {
@@ -139,7 +149,7 @@
   }
 
   ::selection {
-    background-color: color-mix(in oklab, var(--primary) 35%, transparent);
+    background-color: color-mix(in oklab, var(--brand-secondary) 30%, transparent);
   }
 }
 
