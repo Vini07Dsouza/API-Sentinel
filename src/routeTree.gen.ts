@@ -10,6 +10,8 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AnalyticsRouteImport } from './routes/analytics'
+import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as IncidentsIndexRouteImport } from './routes/incidents.index'
 import { Route as IncidentsIncidentIdRouteImport } from './routes/incidents.$incidentId'
 import { Route as MonitorsIndexRouteImport } from './routes/monitors.index'
@@ -19,6 +21,16 @@ import { Route as MonitorsMonitorIdEditRouteImport } from './routes/monitors.$mo
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalyticsRoute = AnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotificationsRoute = NotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IncidentsIndexRoute = IncidentsIndexRouteImport.update({
@@ -49,6 +61,8 @@ const MonitorsMonitorIdEditRoute = MonitorsMonitorIdEditRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/analytics': typeof AnalyticsRoute
+  '/notifications': typeof NotificationsRoute
   '/incidents/$incidentId': typeof IncidentsIncidentIdRoute
   '/monitors/new': typeof MonitorsNewRoute
   '/incidents/': typeof IncidentsIndexRoute
@@ -57,6 +71,8 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/analytics': typeof AnalyticsRoute
+  '/notifications': typeof NotificationsRoute
   '/incidents/$incidentId': typeof IncidentsIncidentIdRoute
   '/monitors/new': typeof MonitorsNewRoute
   '/incidents': typeof IncidentsIndexRoute
@@ -66,6 +82,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/analytics': typeof AnalyticsRoute
+  '/notifications': typeof NotificationsRoute
   '/incidents/$incidentId': typeof IncidentsIncidentIdRoute
   '/monitors/new': typeof MonitorsNewRoute
   '/incidents/': typeof IncidentsIndexRoute
@@ -76,6 +94,8 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/analytics'
+    | '/notifications'
     | '/incidents/$incidentId'
     | '/monitors/new'
     | '/incidents/'
@@ -84,6 +104,8 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/analytics'
+    | '/notifications'
     | '/incidents/$incidentId'
     | '/monitors/new'
     | '/incidents'
@@ -92,6 +114,8 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/analytics'
+    | '/notifications'
     | '/incidents/$incidentId'
     | '/monitors/new'
     | '/incidents/'
@@ -101,6 +125,8 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AnalyticsRoute: typeof AnalyticsRoute
+  NotificationsRoute: typeof NotificationsRoute
   IncidentsIncidentIdRoute: typeof IncidentsIncidentIdRoute
   MonitorsNewRoute: typeof MonitorsNewRoute
   IncidentsIndexRoute: typeof IncidentsIndexRoute
@@ -115,6 +141,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analytics': {
+      id: '/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notifications': {
+      id: '/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof NotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/incidents/': {
@@ -157,6 +197,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AnalyticsRoute: AnalyticsRoute,
+  NotificationsRoute: NotificationsRoute,
   IncidentsIncidentIdRoute: IncidentsIncidentIdRoute,
   MonitorsNewRoute: MonitorsNewRoute,
   IncidentsIndexRoute: IncidentsIndexRoute,
