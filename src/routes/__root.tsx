@@ -8,15 +8,14 @@ import {
   Scripts,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { Toaster } from "@/components/ui/sonner";
-import { AppSidebar } from "@/components/layout/app-sidebar";
-import { AppHeader } from "@/components/layout/app-header";
-import { SentinelProvider } from "@/lib/store/sentinel-store";
+
+// The shell is loaded lazily so the entry bundle shares no component modules with the
+// route bundles (shared React components in the entry break the dev preview's refresh setup).
+const AppShell = lazy(() => import("@/components/layout/app-shell"));
 
 function NotFoundComponent() {
   return (
@@ -129,20 +128,11 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SentinelProvider>
-        <SidebarProvider>
-          <div className="flex min-h-screen w-full">
-            <AppSidebar />
-            <SidebarInset className="min-w-0">
-              <AppHeader />
-              <main className="min-w-0 flex-1">
-                <Outlet />
-              </main>
-            </SidebarInset>
-          </div>
-        </SidebarProvider>
-        <Toaster theme="dark" position="bottom-right" richColors closeButton />
-      </SentinelProvider>
+      <Suspense fallback={<div className="min-h-screen bg-background" />}>
+        <AppShell>
+          <Outlet />
+        </AppShell>
+      </Suspense>
     </QueryClientProvider>
   );
 }
