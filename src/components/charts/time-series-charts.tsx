@@ -2,35 +2,61 @@ import { Area, AreaChart, Bar, BarChart, CartesianGrid, Line, LineChart, Referen
 import { format } from "date-fns";
 
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
-import type { Bucket } from "@/lib/monitoring/metrics";
 import { cn } from "@/lib/utils";
 
-function tickFormatter(bucketMs: number) {
-  return (t: number) => format(t, bucketMs >= 24 * 3600 * 1000 ? "MMM d" : bucketMs >= 6 * 3600 * 1000 ? "MMM d HH:mm" : "HH:mm");
+export interface ResponsePoint {
+  t: number;
+  avgMs: number | null;
+  maxMs?: number | null;
 }
+
+export interface UptimeSeriesPoint {
+  t: number;
+  uptime: number | null;
+}
+
+/** Picks an axis label format from the time span covered by the data. */
+function tickFormatter(points: { t: number }[]) {
+  const first = points[0]?.t ?? 0;
+  const last = points[points.length - 1]?.t ?? 0;
+  const span = last - first;
+  const pattern = span > 3 * 86400000 ? "MMM d" : span > 86400000 ? "MMM d HH:mm" : "HH:mm";
+  return (t: number) => format(t, pattern);
+}
+
+function TooltipRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex w-full items-center justify-between gap-4">
+      <span className="text-muted-foreground">{label}</span>
+      <span className="tabular font-mono font-medium text-foreground">{value}</span>
+    </div>
+  );
+}
+
+const labelFromPayload = (_: unknown, payload: { payload?: { t?: number } }[] | undefined) => {
+  const t = payload?.[0]?.payload?.t;
+  return t ? format(t, "MMM d, HH:mm") : "";
+};
 
 const responseConfig = {
   avgMs: { label: "Avg response", color: "var(--chart-1)" },
-  maxMs: { label: "Max response", color: "var(--chart-2)" },
+  maxMs: { label: "Max response", color: "var(--chart-4)" },
 } satisfies ChartConfig;
 
 export function ResponseTimeChart({
-  buckets,
-  bucketMs,
+  points,
   showMax = false,
   threshold,
   className,
 }: {
-  buckets: Bucket[];
-  bucketMs: number;
+  points: ResponsePoint[];
   showMax?: boolean;
   threshold?: number;
   className?: string;
 }) {
-  const fmt = tickFormatter(bucketMs);
   return (
     <ChartContainer config={responseConfig} className={cn("aspect-auto h-64 w-full", className)}>
-      <AreaChart data={buckets} margin={{ left: 0, right: 8, top: 8 }}>
+      <AreaChart data={points} margin={{ left: 0, right: 8, top: 8 }}>
         <defs>
           <linearGradient id="fillAvg" x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor="var(--color-avgMs)" stopOpacity={0.3} />
@@ -38,27 +64,19 @@ export function ResponseTimeChart({
           </linearGradient>
         </defs>
         <CartesianGrid vertical={false} strokeDasharray="3 3" />
-        <XAxis dataKey="t" tickFormatter={fmt} tickLine={false} axisLine={false} minTickGap={32} tickMargin={8} />
+        <XAxis dataKey="t" tickFormatter={tickFormatter(points)} tickLine={false} axisLine={false} minTickGap={32} tickMargin={8} />
         <YAxis width={52} tickLine={false} axisLine={false} tickFormatter={(v: number) => (v >= 1000 ? `${(v / 1000).toFixed(1)}s` : `${v}ms`)} />
         <ChartTooltip
           content={
             <ChartTooltipContent
-              labelFormatter={(_, payload) => {
-                const t = payload?.[0]?.payload?.t as number | undefined;
-                return t ? format(t, "MMM d, HH:mm") : "";
-              }}
+              labelFormatter={labelFromPayload}
               formatter={(value, name) => (
-                <div className="flex w-full items-center justify-between gap-4">
-                  <span className="text-muted-foreground">{responseConfig[name as keyof typeof responseConfig]?.label ?? name}</span>
-                  <span className="tabular font-mono font-medium text-foreground">{value} ms</span>
-                </div>
+                <TooltipRow label={responseConfig[name as keyof typeof responseConfig]?.label ?? String(name)} value={`${Math.round(Number(value))} ms`} />
               )}
             />
           }
         />
-        {threshold ? (
-          <ReferenceLine y={threshold} stroke="var(--warning)" strokeDasharray="4 4" strokeOpacity={0.6} />
-        ) : null}
+        {threshold ? <ReferenceLine y={threshold} stroke="var(--warning)" strokeDasharray="4 4" strokeOpacity={0.7} /> : null}
         {showMax ? (
           <Area dataKey="maxMs" type="monotone" stroke="var(--color-maxMs)" fill="transparent" strokeWidth={1.25} strokeDasharray="4 3" connectNulls />
         ) : null}
@@ -70,40 +88,21 @@ export function ResponseTimeChart({
 
 const uptimeConfig = { uptime: { label: "Uptime", color: "var(--chart-3)" } } satisfies ChartConfig;
 
-export function UptimeChart({
-  buckets,
-  bucketMs,
-  target,
-  className,
-}: {
-  buckets: Bucket[];
-  bucketMs: number;
-  target?: number;
-  className?: string;
-}) {
-  const fmt = tickFormatter(bucketMs);
-  const values = buckets.map((b) => b.uptime).filter((v): v is number => v !== null);
+export function UptimeChart({ points, target, className }: { points: UptimeSeriesPoint[]; target?: number; className?: string }) {
+  const values = points.map((b) => b.uptime).filter((v): v is number => v !== null);
   const min = values.length ? Math.min(...values, target ?? 100) : 95;
   const domainMin = Math.max(0, Math.floor(min - 1));
   return (
     <ChartContainer config={uptimeConfig} className={cn("aspect-auto h-64 w-full", className)}>
-      <LineChart data={buckets} margin={{ left: 0, right: 8, top: 8 }}>
+      <LineChart data={points} margin={{ left: 0, right: 8, top: 8 }}>
         <CartesianGrid vertical={false} strokeDasharray="3 3" />
-        <XAxis dataKey="t" tickFormatter={fmt} tickLine={false} axisLine={false} minTickGap={32} tickMargin={8} />
+        <XAxis dataKey="t" tickFormatter={tickFormatter(points)} tickLine={false} axisLine={false} minTickGap={32} tickMargin={8} />
         <YAxis width={48} domain={[domainMin, 100]} tickLine={false} axisLine={false} tickFormatter={(v: number) => `${v}%`} />
         <ChartTooltip
           content={
             <ChartTooltipContent
-              labelFormatter={(_, payload) => {
-                const t = payload?.[0]?.payload?.t as number | undefined;
-                return t ? format(t, "MMM d, HH:mm") : "";
-              }}
-              formatter={(value) => (
-                <div className="flex w-full items-center justify-between gap-4">
-                  <span className="text-muted-foreground">Uptime</span>
-                  <span className="tabular font-mono font-medium text-foreground">{Number(value).toFixed(2)}%</span>
-                </div>
-              )}
+              labelFormatter={labelFromPayload}
+              formatter={(value) => <TooltipRow label="Uptime" value={`${Number(value).toFixed(2)}%`} />}
             />
           }
         />
@@ -113,8 +112,6 @@ export function UptimeChart({
     </ChartContainer>
   );
 }
-
-const barConfig = { value: { label: "Value", color: "var(--chart-1)" } } satisfies ChartConfig;
 
 export function SimpleBarChart({
   data,
@@ -131,7 +128,10 @@ export function SimpleBarChart({
   className?: string;
   layout?: "horizontal" | "vertical";
 }) {
-  const config = { value: { ...barConfig.value, label: valueLabel, color } } satisfies ChartConfig;
+  const config = { value: { label: valueLabel, color } } satisfies ChartConfig;
+  const tooltip = (
+    <ChartTooltip content={<ChartTooltipContent formatter={(value) => <TooltipRow label={valueLabel} value={valueFormatter(Number(value))} />} />} />
+  );
   return (
     <ChartContainer config={config} className={cn("aspect-auto h-64 w-full", className)}>
       {layout === "vertical" ? (
@@ -139,18 +139,7 @@ export function SimpleBarChart({
           <CartesianGrid horizontal={false} strokeDasharray="3 3" />
           <XAxis type="number" tickLine={false} axisLine={false} tickFormatter={valueFormatter} />
           <YAxis type="category" dataKey="label" width={150} tickLine={false} axisLine={false} tick={{ fontSize: 11 }} />
-          <ChartTooltip
-            content={
-              <ChartTooltipContent
-                formatter={(value) => (
-                  <div className="flex w-full items-center justify-between gap-4">
-                    <span className="text-muted-foreground">{valueLabel}</span>
-                    <span className="tabular font-mono font-medium text-foreground">{valueFormatter(Number(value))}</span>
-                  </div>
-                )}
-              />
-            }
-          />
+          {tooltip}
           <Bar dataKey="value" fill="var(--color-value)" radius={4} maxBarSize={18} />
         </BarChart>
       ) : (
@@ -158,40 +147,10 @@ export function SimpleBarChart({
           <CartesianGrid vertical={false} strokeDasharray="3 3" />
           <XAxis dataKey="label" tickLine={false} axisLine={false} tickMargin={8} />
           <YAxis width={40} tickLine={false} axisLine={false} allowDecimals={false} />
-          <ChartTooltip
-            content={
-              <ChartTooltipContent
-                formatter={(value) => (
-                  <div className="flex w-full items-center justify-between gap-4">
-                    <span className="text-muted-foreground">{valueLabel}</span>
-                    <span className="tabular font-mono font-medium text-foreground">{valueFormatter(Number(value))}</span>
-                  </div>
-                )}
-              />
-            }
-          />
+          {tooltip}
           <Bar dataKey="value" fill="var(--color-value)" fillOpacity={0.85} radius={4} maxBarSize={44} />
         </BarChart>
       )}
     </ChartContainer>
-  );
-}
-
-/** Small uptime bar strip (one bar per bucket), used in monitor lists. */
-export function UptimeStrip({ buckets, className }: { buckets: Bucket[]; className?: string }) {
-  return (
-    <div className={cn("flex h-6 items-end gap-[2px]", className)} aria-hidden>
-      {buckets.map((b) => {
-        const tone =
-          b.uptime === null
-            ? "bg-muted"
-            : b.uptime >= 99.5
-              ? "bg-success/80"
-              : b.uptime >= 95
-                ? "bg-warning/80"
-                : "bg-destructive/80";
-        return <span key={b.t} className={cn("h-full min-w-[3px] flex-1 rounded-[2px]", tone)} />;
-      })}
-    </div>
   );
 }
