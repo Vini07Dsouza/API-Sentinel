@@ -1,12 +1,18 @@
 // TanStack Query hooks over the service layer. Components never call fetch directly.
 import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { isApiError } from "@/services/errors";
 import { analyticsService, type AnalyticsQuery } from "@/services/analytics";
 import { incidentsService } from "@/services/incidents";
 import { monitorsService } from "@/services/monitors";
 import type { MonitorInput, Period } from "@/lib/types";
 
 const LIVE_REFRESH_MS = 30_000;
+
+/** Refresh live data every 30s, but stop while the backend is returning errors. */
+function liveRefresh(query: { state: { error: unknown } }): number | false {
+  return isApiError(query.state.error) ? false : LIVE_REFRESH_MS;
+}
 
 export const queryKeys = {
   monitors: ["monitors"] as const,
@@ -23,7 +29,7 @@ export function useMonitors() {
   return useQuery({
     queryKey: queryKeys.monitors,
     queryFn: ({ signal }) => monitorsService.list(signal),
-    refetchInterval: LIVE_REFRESH_MS,
+    refetchInterval: liveRefresh,
   });
 }
 
@@ -53,7 +59,7 @@ export function useIncidents() {
   return useQuery({
     queryKey: queryKeys.incidents,
     queryFn: ({ signal }) => incidentsService.list(signal),
-    refetchInterval: LIVE_REFRESH_MS,
+    refetchInterval: liveRefresh,
   });
 }
 
@@ -61,7 +67,7 @@ export function useAnalyticsOverview(q: AnalyticsQuery) {
   return useQuery({
     queryKey: queryKeys.overview(q),
     queryFn: ({ signal }) => analyticsService.overview(q, signal),
-    refetchInterval: LIVE_REFRESH_MS,
+    refetchInterval: liveRefresh,
   });
 }
 
